@@ -8,6 +8,8 @@ import {html, LitElement, PropertyValues, TemplateResult} from 'lit';
 import {property, queryAssignedElements, state} from 'lit/decorators';
 import {ClassInfo, classMap} from 'lit/directives/class-map';
 
+import {ARIARole} from '../../types/aria';
+
 /** @soyCompatible */
 export class ListItem extends LitElement {
   @property({type: String}) supportingText = '';
@@ -32,11 +34,18 @@ export class ListItem extends LitElement {
     return html`
       <li
           tabindex="0"
-          class="md3-list-item ${classMap(this.getRenderClasses())}"><!--
+          role=${this.getAriaRole()}
+          class="md3-list-item ${classMap(this.getRenderClasses())}"
+          @click=${this.handleClick}><!--
         -->${this.renderStart()}<!--
         -->${this.renderBody()}<!--
         -->${this.renderEnd()}<!--
       --></li>`;
+  }
+
+  /** @soyTemplate */
+  protected getAriaRole(): ARIARole {
+    return 'listitem';
   }
 
   /** @soyTemplate */
@@ -118,5 +127,11 @@ export class ListItem extends LitElement {
         (el) => el.classList.contains('md3-list-item__image'));
     this.hasLeadingVideo = this.startElement.some(
         (el) => el.classList.contains('md3-list-item__video'));
+  }
+
+  protected handleClick() {
+    this.dispatchEvent(new CustomEvent(
+        'list-item-interaction',
+        {detail: {state: {selected: false}}, bubbles: true, composed: true}));
   }
 }
