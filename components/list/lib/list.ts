@@ -6,17 +6,36 @@
 
 import {html, LitElement, TemplateResult} from 'lit';
 
+import {ARIARole} from '../../types/aria';
+
+import {ListItemInteractionEvent} from './constants';
+
 /** @soyCompatible */
 export class List extends LitElement {
   static override shadowRootOptions:
       ShadowRootInit = {mode: 'open', delegatesFocus: true};
 
   /** @soyTemplate */
+  protected getAriaRole(): ARIARole {
+    return 'list';
+  }
+
+  /** @soyTemplate */
   override render(): TemplateResult {
     return html`
-      <ul tabindex="0" class="md3-list">
+      <ul class="md3-list"
+          tabindex="0"
+          role=${this.getAriaRole()}
+          @list-item-interaction=${this.handleItemInteraction}>
         <slot></slot>
       </ul>
     `;
+  }
+
+
+  handleItemInteraction(event: ListItemInteractionEvent) {
+    if (event.detail.state.isSelected) {
+      // TODO: manage selection state.
+    }
   }
 }
